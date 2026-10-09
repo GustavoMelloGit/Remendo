@@ -3,6 +3,7 @@ import ServiceManagement
 
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var statusItem: NSStatusItem?
+    private let updater = Updater()
 
     // Registre fixes novos aqui.
     private let linkRouter = LinkRouterFix()
@@ -49,6 +50,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         login.state = SMAppService.mainApp.status == .enabled ? .on : .off
         menu.addItem(login)
+
+        menu.addItem(ActionMenuItem("Procurar atualizações…") { [updater] in
+            updater.checkForUpdates()
+        })
 
         menu.addItem(ActionMenuItem("Sair do Remendo", key: "q") {
             NSApp.terminate(nil)

@@ -17,12 +17,20 @@
     <key>CFBundleShortVersionString</key>
     <string>0.1.0</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>0.1.0</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>LSUIElement</key>
     <true/>
     <key>NSHighResolutionCapable</key>
+    <true/>
+
+    <!-- Auto update (Sparkle): o feed é o appcast.xml da última release do GitHub -->
+    <key>SUFeedURL</key>
+    <string>https://github.com/GustavoMelloGit/Remendo/releases/latest/download/appcast.xml</string>
+    <key>SUPublicEDKey</key>
+    <string>uLNz/k3feUBkk54iYaynvI8ux4TDA392RKD/gVFySUg=</string>
+    <key>SUEnableAutomaticChecks</key>
     <true/>
 
     <!-- Faz o macOS enxergar o Remendo como um "navegador" -->
