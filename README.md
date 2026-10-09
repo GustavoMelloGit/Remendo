@@ -34,11 +34,9 @@ Pra desfazer: Ajustes do Sistema → Área de Trabalho e Dock → Navegador padr
 ## Atualizações
 
 O app se atualiza sozinho via [Sparkle](https://sparkle-project.org), lendo o `appcast.xml` da última release.
-Pra lançar uma versão:
-
-```bash
-git tag v0.2.0 && git push origin v0.2.0
-```
+Todo push na `main` gera uma release nova, subindo o patch da última tag (0.2.0 → 0.2.1).
+Pra pular de minor/major, crie a tag na mão (`git tag v0.3.0 && git push origin v0.3.0`) antes do próximo push
+— a release seguinte sai como 0.3.1.
 
 O workflow `.github/workflows/release.yml` compila, assina o zip com a chave EdDSA (secret `SPARKLE_PRIVATE_KEY`)
 e publica a release. A chave privada também fica no Keychain (conta `remendo` do `generate_keys` do Sparkle).
