@@ -1,0 +1,56 @@
+# Remendo
+
+App de barra de menus pro macOS com correções pequenas do dia a dia.
+Requer macOS 13 ou mais novo.
+
+## Fixes
+
+### 1. Roteador de links
+
+Quando você clica num link em qualquer app, o Remendo decide pra qual navegador ele vai:
+
+1. Nenhum navegador aberto → abre no seu navegador padrão.
+2. Só um aberto → abre nele.
+3. Mais de um aberto e o padrão está entre eles → abre no padrão.
+4. Mais de um aberto e o padrão não está → abre no que você usou por último.
+
+Pra isso funcionar, o Remendo vira o "navegador" do sistema e repassa cada link.
+O seu navegador padrão de verdade fica guardado dentro do Remendo (menu → Navegador padrão).
+
+## Instalar
+
+```bash
+chmod +x build.sh
+./build.sh install
+```
+
+Depois, no ícone de curativo na barra de menus:
+
+1. Confira o **Navegador padrão** (ele pega o atual do sistema na primeira vez).
+2. Clique em **Fazer o Remendo receber os links…** e confirme as duas janelas do macOS.
+
+Pra desfazer: Ajustes do Sistema → Área de Trabalho e Dock → Navegador padrão.
+
+## Adicionar um fix novo
+
+1. Crie uma pasta em `Sources/Remendo/Fixes/<NomeDoFix>/`.
+2. Faça uma classe que conforma com `Fix` (`Sources/Remendo/Core/Fix.swift`).
+3. Registre ela em `AppDelegate.fixes`.
+
+## Estrutura
+
+```
+Sources/Remendo/
+├── RemendoApp.swift          ponto de entrada
+├── AppDelegate.swift         barra de menus e recebimento de links
+├── Core/
+│   ├── Fix.swift             protocolo dos fixes + ActionMenuItem
+│   └── Settings.swift        preferências (UserDefaults)
+└── Fixes/LinkRouter/
+    ├── BrowserCatalog.swift          navegadores instalados
+    ├── BrowserActivityTracker.swift  qual foi usado por último
+    ├── RoutingRule.swift             a regra de decisão
+    └── LinkRouterFix.swift           junta tudo + menu
+Support/Info.plist            registra http/https
+build.sh                      monta o Remendo.app
+```

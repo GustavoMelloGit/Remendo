@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="patch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFCB57"/>
+      <stop offset="1" stop-color="#EE8F2A"/>
+    </linearGradient>
+    <pattern id="weave" width="14" height="14" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="7" x2="14" y2="7" stroke="#8A4B0F" stroke-width="3" stroke-opacity="0.08"/>
+    </pattern>
+  </defs>
+  <g transform="translate(512 512) rotate(-9)">
+    <rect x="-225" y="-225" width="450" height="450" rx="38" fill="url(#patch)"/>
+    <rect x="-225" y="-225" width="450" height="450" rx="38" fill="url(#weave)"/>
+    <rect x="-223" y="-223" width="446" height="446" rx="36" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="4"/>
+    <rect x="-188" y="-188" width="376" height="376" rx="18" fill="none"
+          stroke="#FFF7E6" stroke-width="16" stroke-linecap="round" stroke-dasharray="34 26"/>
+  </g>
+</svg>
