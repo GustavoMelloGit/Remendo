@@ -1,16 +1,18 @@
-# Cada push na main vira uma release (patch +1 sobre a última tag) com o
-# Remendo.app + appcast.xml. O app procura atualização em releases/latest/download/appcast.xml.
+# Semantic release: a versão sai das mensagens de commit desde a última tag.
+#   fix: -> patch   feat: -> minor   feat!: / BREAKING CHANGE -> major
+# Commits de outros tipos (chore:, docs:...) não geram release.
+# Cada release leva o Remendo.app zipado + appcast.xml (lido pelo Sparkle no app).
 name: Release
 
 on:
   push:
     branches: [main]
-    paths-ignore: ["README.md"]
 
 permissions:
   contents: write
+  issues: write
+  pull-requests: write
 
-# Dois pushes seguidos não podem disputar o mesmo número de versão.
 concurrency:
   group: release
   cancel-in-progress: false
@@ -23,47 +25,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Próxima versão
-        run: |
-          LAST=$(git tag --list 'v*' --sort=-v:refname | head -1)
-          IFS=. read -r MAJOR MINOR PATCH <<< "${LAST#v}"
-          VERSION="${MAJOR:-0}.${MINOR:-0}.$(( ${PATCH:-0} + 1 ))"
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-          echo "TAG=v$VERSION" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-      - name: Build
-        run: |
-          VERSION="$VERSION" ./build.sh
-          ditto -c -k --keepParent build/Remendo.app "build/Remendo-$VERSION.zip"
-
-      - name: Assinar e gerar appcast
+      - name: Semantic release
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
-        run: |
-          ZIP="build/Remendo-$VERSION.zip"
-          SIG=$(echo "$SPARKLE_PRIVATE_KEY" | .build/artifacts/sparkle/Sparkle/bin/sign_update --ed-key-file - "$ZIP")
-          URL="https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/Remendo-$VERSION.zip"
-          cat > build/appcast.xml <<XML
-          <?xml version="1.0" encoding="utf-8"?>
-          <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
-            <channel>
-              <title>Remendo</title>
-              <item>
-                <title>$VERSION</title>
-                <pubDate>$(date -R)</pubDate>
-                <sparkle:version>$VERSION</sparkle:version>
-                <sparkle:shortVersionString>$VERSION</sparkle:shortVersionString>
-                <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
-                <sparkle:releaseNotesLink>https://github.com/$GITHUB_REPOSITORY/releases/tag/$TAG</sparkle:releaseNotesLink>
-                <enclosure url="$URL" type="application/octet-stream" $SIG />
-              </item>
-            </channel>
-          </rss>
-          XML
-
-      - name: Publicar release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "$TAG" "build/Remendo-$VERSION.zip" build/appcast.xml \
-            --target "$GITHUB_SHA" --title "Remendo $VERSION" --generate-notes
+        run: npx --yes -p semantic-release@24 -p @semantic-release/exec@6 -p conventional-changelog-conventionalcommits@8 semantic-release

@@ -34,11 +34,15 @@ Pra desfazer: Ajustes do Sistema → Área de Trabalho e Dock → Navegador padr
 ## Atualizações
 
 O app se atualiza sozinho via [Sparkle](https://sparkle-project.org), lendo o `appcast.xml` da última release.
-Todo push na `main` gera uma release nova, subindo o patch da última tag (0.2.0 → 0.2.1).
-Pra pular de minor/major, crie a tag na mão (`git tag v0.3.0 && git push origin v0.3.0`) antes do próximo push
-— a release seguinte sai como 0.3.1.
+Todo push na `main` passa pelo semantic-release, e a versão sai do tipo dos commits:
 
-O workflow `.github/workflows/release.yml` compila, assina o zip com a chave EdDSA (secret `SPARKLE_PRIVATE_KEY`)
+- `fix: ...` → patch (0.2.1 → 0.2.2)
+- `feat: ...` → minor (0.2.1 → 0.3.0)
+- `feat!: ...` ou `BREAKING CHANGE:` no corpo → major (0.2.1 → 1.0.0)
+
+Outros tipos (`chore:`, `docs:`, `refactor:`...) não geram release.
+
+O workflow `.github/workflows/release.yml` roda o `scripts/package-release.sh`, que compila, assina o zip com a chave EdDSA (secret `SPARKLE_PRIVATE_KEY`)
 e publica a release. A chave privada também fica no Keychain (conta `remendo` do `generate_keys` do Sparkle).
 
 ## Adicionar um fix novo
@@ -64,4 +68,6 @@ Sources/Remendo/
     └── LinkRouterFix.swift           junta tudo + menu
 Support/Info.plist            registra http/https
 build.sh                      monta o Remendo.app
+scripts/package-release.sh    zip assinado + appcast.xml (usado pelo semantic-release)
+.releaserc.json               config do semantic-release
 ```
