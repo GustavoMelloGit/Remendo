@@ -15,7 +15,7 @@ Quando você clica num link em qualquer app, o Remendo decide pra qual navegador
 4. Mais de um aberto e o padrão não está → abre no que você usou por último.
 
 Pra isso funcionar, o Remendo vira o "navegador" do sistema e repassa cada link.
-O seu navegador padrão de verdade fica guardado dentro do Remendo (menu → Navegador padrão).
+O seu navegador padrão de verdade fica guardado dentro do Remendo (menu → Roteador de links… → Navegador padrão).
 
 ## Instalar
 
@@ -24,10 +24,12 @@ chmod +x build.sh
 ./build.sh install
 ```
 
-Depois, no ícone de curativo na barra de menus:
+Depois, no ícone de curativo na barra de menus, abra **Roteador de links…**:
 
 1. Confira o **Navegador padrão** (ele pega o atual do sistema na primeira vez).
-2. Clique em **Fazer o Remendo receber os links…** e confirme as duas janelas do macOS.
+2. Clique em **Receber os links…** e confirme as duas janelas do macOS.
+
+Cada fix tem a sua página na janela de ajustes. Ela também abre quando você abre o Remendo de novo pelo Finder ou Spotlight.
 
 Pra desfazer: Ajustes do Sistema → Área de Trabalho e Dock → Navegador padrão.
 
@@ -49,7 +51,8 @@ e publica a release. A chave privada também fica no Keychain (conta `remendo` d
 
 1. Crie uma pasta em `Sources/Remendo/Fixes/<NomeDoFix>/`.
 2. Faça uma classe que conforma com `Fix` (`Sources/Remendo/Core/Fix.swift`).
-3. Registre ela em `AppDelegate.fixes`.
+   O `settingsView()` devolve as seções (`Section`) da página do fix na janela de ajustes.
+3. Registre ela em `AppDelegate.fixes`. Ela ganha um item no menu e uma página na barra lateral.
 
 ## Estrutura
 
@@ -59,13 +62,15 @@ Sources/Remendo/
 ├── AppDelegate.swift         barra de menus e recebimento de links
 ├── Core/
 │   ├── Fix.swift             protocolo dos fixes + ActionMenuItem
+│   ├── SettingsWindow.swift  janela de ajustes (barra lateral com os fixes)
 │   ├── Settings.swift        preferências (UserDefaults)
 │   └── Updater.swift         auto update (Sparkle)
 └── Fixes/LinkRouter/
     ├── BrowserCatalog.swift          navegadores instalados
     ├── BrowserActivityTracker.swift  qual foi usado por último
     ├── RoutingRule.swift             a regra de decisão
-    └── LinkRouterFix.swift           junta tudo + menu
+    ├── LinkRouterSettingsView.swift  página de ajustes
+    └── LinkRouterFix.swift           junta tudo
 Support/Info.plist            registra http/https
 build.sh                      monta o Remendo.app
 scripts/package-release.sh    zip assinado + appcast.xml (usado pelo semantic-release)

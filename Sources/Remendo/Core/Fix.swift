@@ -1,15 +1,21 @@
 import AppKit
+import SwiftUI
 
 /// Cada "remendo" do app implementa este protocolo.
 /// Pra adicionar um fix novo: crie uma classe que conforma com `Fix`
 /// e registre ela em `AppDelegate.fixes`.
 protocol Fix: AnyObject {
-    /// Nome que aparece como seção no menu.
+    /// Nome que aparece no menu e na barra lateral da janela de ajustes.
     var title: String { get }
 
-    /// Itens de menu do fix. Chamado toda vez que o menu abre,
-    /// então pode refletir o estado atual.
-    func menuItems() -> [NSMenuItem]
+    /// SF Symbol do fix.
+    var symbol: String { get }
+
+    /// Uma frase explicando o que o fix faz. Aparece no topo dos ajustes.
+    var summary: String { get }
+
+    /// Seções (`Section`) com os ajustes do fix. A janela embrulha tudo num `Form`.
+    func settingsView() -> AnyView
 
     /// Chamado uma vez quando o app termina de iniciar.
     func start()

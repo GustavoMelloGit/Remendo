@@ -1,9 +1,12 @@
 import AppKit
+import SwiftUI
 import os
 
 /// Fix 1: manda cada link pro navegador que faz sentido, não sempre pro padrão.
 final class LinkRouterFix: Fix {
     let title = "Roteador de links"
+    let symbol = "arrow.triangle.branch"
+    let summary = "Manda cada link pro navegador que faz sentido, não sempre pro padrão."
 
     private let tracker = BrowserActivityTracker()
     private let log = Logger(subsystem: "com.gustavo.remendo", category: "LinkRouter")
@@ -69,58 +72,16 @@ final class LinkRouterFix: Fix {
         }
     }
 
-    // MARK: - Menu
+    // MARK: - Ajustes
 
-    func menuItems() -> [NSMenuItem] {
-        var items: [NSMenuItem] = []
-
-        let toggle = ActionMenuItem("Abrir no navegador que já está aberto") {
-            Settings.linkRouterEnabled.toggle()
-        }
-        toggle.state = Settings.linkRouterEnabled ? .on : .off
-        items.append(toggle)
-
-        let defaultItem = NSMenuItem(title: "Navegador padrão", action: nil, keyEquivalent: "")
-        defaultItem.submenu = browserPickerMenu()
-        items.append(defaultItem)
-
-        if BrowserCatalog.isRemendoSystemDefault() {
-            let ok = NSMenuItem(title: "Remendo está recebendo os links ✓", action: nil, keyEquivalent: "")
-            ok.isEnabled = false
-            items.append(ok)
-        } else {
-            items.append(ActionMenuItem("Fazer o Remendo receber os links…") { [weak self] in
-                self?.becomeSystemDefault()
-            })
-        }
-
-        return items
-    }
-
-    private func browserPickerMenu() -> NSMenu {
-        let menu = NSMenu()
-        let preferred = Settings.preferredBrowserBundleID?.lowercased()
-
-        for browser in BrowserCatalog.installed() {
-            let item = ActionMenuItem(browser.name) {
-                Settings.preferredBrowserBundleID = browser.bundleID
-            }
-            item.image = browser.icon
-            item.state = browser.bundleID.lowercased() == preferred ? .on : .off
-            menu.addItem(item)
-        }
-
-        if menu.items.isEmpty {
-            let empty = NSMenuItem(title: "Nenhum navegador encontrado", action: nil, keyEquivalent: "")
-            empty.isEnabled = false
-            menu.addItem(empty)
-        }
-        return menu
+    func settingsView() -> AnyView {
+        AnyView(LinkRouterSettingsView(fix: self))
     }
 
     /// Pede ao macOS pra usar o Remendo como navegador do sistema.
     /// O macOS mostra uma janela de confirmação pra cada esquema.
-    private func becomeSystemDefault() {
+    /// `done` roda na main thread quando o macOS termina de responder.
+    func becomeSystemDefault(done: @escaping () -> Void) {
         // Garante que o padrão atual fique salvo antes de trocar.
         if Settings.preferredBrowserBundleID == nil,
            let current = BrowserCatalog.systemDefaultBrowser() {
@@ -128,15 +89,18 @@ final class LinkRouterFix: Fix {
         }
 
         let me = Bundle.main.bundleURL
+        let finish = { DispatchQueue.main.async(execute: done) }
         NSWorkspace.shared.setDefaultApplication(at: me, toOpenURLsWithScheme: "http") { [log] error in
             if let error {
                 log.error("http: \(error.localizedDescription, privacy: .public)")
+                finish()
                 return
             }
             NSWorkspace.shared.setDefaultApplication(at: me, toOpenURLsWithScheme: "https") { error in
                 if let error {
                     log.error("https: \(error.localizedDescription, privacy: .public)")
                 }
+                finish()
             }
         }
     }
