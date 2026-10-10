@@ -17,10 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        // Versão preenchida: o contorno fino na diagonal fica borrado e apagado na barra.
-        item.button?.image = NSImage(systemSymbolName: "bandage.fill", accessibilityDescription: "Remendo")?
-            .withSymbolConfiguration(.init(pointSize: 15, weight: .medium))
-        item.button?.image?.isTemplate = true
+        item.button?.image = MenuBarIcon.make()
 
         let menu = NSMenu()
         menu.delegate = self
