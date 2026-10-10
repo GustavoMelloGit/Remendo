@@ -4,7 +4,8 @@ import Foundation
 enum Settings {
     private static let defaults = UserDefaults.standard
 
-    private enum Key {
+    /// Também usadas pelo `@AppStorage` das telas de ajustes.
+    enum Key {
         static let preferredBrowser = "linkRouter.preferredBrowserBundleID"
         static let routerEnabled = "linkRouter.enabled"
     }

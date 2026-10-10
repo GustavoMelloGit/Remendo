@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // Registre fixes novos aqui.
     private let linkRouter = LinkRouterFix()
     private lazy var fixes: [Fix] = [linkRouter]
+    private lazy var settingsWindow = SettingsWindow(fixes: fixes)
 
     func applicationWillFinishLaunching(_ notification: Notification) {
         // Roda antes de qualquer link chegar, inclusive quando o app
@@ -23,6 +24,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.delegate = self
         item.menu = menu
         statusItem = item
+
+        NSApp.mainMenu = Self.makeMainMenu()
+    }
+
+    /// Abrir o Remendo de novo (Finder, Spotlight) mostra a janela de ajustes.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        settingsWindow.show()
+        return false
     }
 
     /// O macOS chama isto quando um link http/https é aberto e o Remendo é o navegador padrão.
@@ -35,13 +44,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
 
+        // Cada fix abre a janela de ajustes direto na página dele.
         for fix in fixes {
-            let header = NSMenuItem(title: fix.title, action: nil, keyEquivalent: "")
-            header.isEnabled = false
-            menu.addItem(header)
-            fix.menuItems().forEach { menu.addItem($0) }
-            menu.addItem(.separator())
+            let item = ActionMenuItem("\(fix.title)…") { [weak self] in
+                self?.settingsWindow.show(fix)
+            }
+            item.image = NSImage(systemSymbolName: fix.symbol, accessibilityDescription: nil)
+            menu.addItem(item)
         }
+        menu.addItem(.separator())
 
         let login = ActionMenuItem("Abrir ao iniciar sessão") {
             Self.toggleLaunchAtLogin()
@@ -53,9 +64,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             updater.checkForUpdates()
         })
 
-        menu.addItem(ActionMenuItem("Sair do Remendo", key: "q") {
+        menu.addItem(ActionMenuItem("Sair", key: "q") {
             NSApp.terminate(nil)
         })
+    }
+
+    /// Não aparece (o app não tem Dock), mas é ele que faz ⌘W e ⌘Q funcionarem na janela.
+    private static func makeMainMenu() -> NSMenu {
+        let appMenu = NSMenu()
+        appMenu.addItem(withTitle: "Fechar janela", action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w")
+        appMenu.addItem(withTitle: "Sair", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+
+        let appItem = NSMenuItem()
+        appItem.submenu = appMenu
+        let main = NSMenu()
+        main.addItem(appItem)
+        return main
     }
 
     private static func toggleLaunchAtLogin() {
