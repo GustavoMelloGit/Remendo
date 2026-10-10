@@ -6,7 +6,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "scripts/package-release.sh ${nextRelease.version}"
+        "prepareCmd": "scripts/package-release.sh ${nextRelease.version} ${Buffer.from(nextRelease.notes).toString('base64')}"
       }
     ],
     [
