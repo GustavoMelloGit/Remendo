@@ -78,23 +78,3 @@ struct LinkRouterSettingsView: View {
         isReceivingLinks = BrowserCatalog.isRemendoSystemDefault()
     }
 }
-
-/// Título com uma linha de explicação embaixo.
-private struct Caption: View {
-    let title: String
-    let detail: String
-
-    init(_ title: String, detail: String) {
-        self.title = title
-        self.detail = detail
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title)
-            Text(detail)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-    }
-}

@@ -7,7 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     // Registre fixes novos aqui.
     private let linkRouter = LinkRouterFix()
-    private lazy var fixes: [Fix] = [linkRouter]
+    private lazy var fixes: [Fix] = [linkRouter, WindowMoverFix()]
     private lazy var settingsWindow = SettingsWindow(fixes: fixes)
 
     func applicationWillFinishLaunching(_ notification: Notification) {

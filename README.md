@@ -17,6 +17,16 @@ Quando você clica num link em qualquer app, o Remendo decide pra qual navegador
 Pra isso funcionar, o Remendo vira o "navegador" do sistema e repassa cada link.
 O seu navegador padrão de verdade fica guardado dentro do Remendo (menu → Roteador de links… → Navegador padrão).
 
+### 2. Mover entre telas
+
+⌥⌘ + seta manda a janela da frente pra tela vizinha naquela direção.
+Janela maximizada continua maximizada; as outras mantêm o tamanho e a posição relativa na tela.
+Os atalhos mudam em menu → Mover entre telas….
+
+Precisa da permissão de Acessibilidade, que o Remendo pede no primeiro uso.
+Como o app é assinado ad hoc, a permissão se perde a cada build ou atualização:
+nos Ajustes do Sistema, remova o Remendo da lista (−) e permita de novo.
+
 ## Instalar
 
 ```bash
@@ -61,16 +71,26 @@ Sources/Remendo/
 ├── RemendoApp.swift          ponto de entrada
 ├── AppDelegate.swift         barra de menus e recebimento de links
 ├── Core/
-│   ├── Fix.swift             protocolo dos fixes + ActionMenuItem
-│   ├── SettingsWindow.swift  janela de ajustes (barra lateral com os fixes)
-│   ├── Settings.swift        preferências (UserDefaults)
-│   └── Updater.swift         auto update (Sparkle)
-└── Fixes/LinkRouter/
-    ├── BrowserCatalog.swift          navegadores instalados
-    ├── BrowserActivityTracker.swift  qual foi usado por último
-    ├── RoutingRule.swift             a regra de decisão
-    ├── LinkRouterSettingsView.swift  página de ajustes
-    └── LinkRouterFix.swift           junta tudo
+│   ├── Fix.swift               protocolo dos fixes + ActionMenuItem
+│   ├── SettingsWindow.swift    janela de ajustes (barra lateral com os fixes)
+│   ├── Settings.swift          preferências (UserDefaults)
+│   ├── Caption.swift           título + explicação, usado nas páginas de ajustes
+│   ├── Shortcut.swift          atalho de teclado (tecla + modificadores)
+│   ├── ShortcutRecorder.swift  botão que grava um atalho
+│   ├── HotKeys.swift           atalhos globais (Carbon)
+│   └── Updater.swift           auto update (Sparkle)
+└── Fixes/
+    ├── LinkRouter/
+    │   ├── BrowserCatalog.swift          navegadores instalados
+    │   ├── BrowserActivityTracker.swift  qual foi usado por último
+    │   ├── RoutingRule.swift             a regra de decisão
+    │   ├── LinkRouterSettingsView.swift  página de ajustes
+    │   └── LinkRouterFix.swift           junta tudo
+    └── WindowMover/
+        ├── ScreenRule.swift              tela vizinha e onde a janela fica nela
+        ├── AXWindow.swift                lê e move a janela (Acessibilidade)
+        ├── WindowMoverSettingsView.swift página de ajustes
+        └── WindowMoverFix.swift          junta tudo
 Support/Info.plist            registra http/https
 build.sh                      monta o Remendo.app
 scripts/package-release.sh    zip assinado + appcast.xml (usado pelo semantic-release)
