@@ -1,4 +1,4 @@
-# Compila e roda os testes em todo PR, antes do merge.
+# Roda os testes e monta o app assinado em todo PR, antes do merge.
 # A release (release.yml) só roda depois, no push na main.
 name: Check
 
@@ -17,3 +17,18 @@ jobs:
 
       - name: Testes
         run: swift test
+
+  # Certificado vencido ou secret errado quebra aqui, não na hora da release.
+  sign:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Certificado de assinatura
+        env:
+          SIGNING_CERT_P12: ${{ secrets.SIGNING_CERT_P12 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
+        run: scripts/import-signing-cert.sh
+
+      - name: App assinado
+        run: ./build.sh && codesign -dr - build/Remendo.app

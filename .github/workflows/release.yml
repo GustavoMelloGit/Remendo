@@ -29,6 +29,12 @@ jobs:
       - name: Testes
         run: swift test
 
+      - name: Certificado de assinatura
+        env:
+          SIGNING_CERT_P12: ${{ secrets.SIGNING_CERT_P12 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
+        run: scripts/import-signing-cert.sh
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22

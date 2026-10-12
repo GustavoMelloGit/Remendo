@@ -24,8 +24,7 @@ Janela maximizada continua maximizada; as outras mantêm o tamanho e a posição
 Os atalhos mudam em menu → Mover entre telas….
 
 Precisa da permissão de Acessibilidade, que o Remendo pede no primeiro uso.
-Como o app é assinado ad hoc, a permissão se perde a cada build ou atualização:
-nos Ajustes do Sistema, remova o Remendo da lista (−) e permita de novo.
+Ela fica presa ao certificado de assinatura (veja [Assinatura](#assinatura)).
 
 ## Instalar
 
@@ -56,6 +55,14 @@ Outros tipos (`chore:`, `docs:`, `refactor:`...) não geram release.
 
 O workflow `.github/workflows/release.yml` roda o `scripts/package-release.sh`, que compila, assina o zip com a chave EdDSA (secret `SPARKLE_PRIVATE_KEY`)
 e publica a release. A chave privada também fica no Keychain (conta `remendo` do `generate_keys` do Sparkle).
+
+## Assinatura
+
+O app é assinado com o certificado autoassinado `Remendo` (no Keychain local; no CI, secrets `SIGNING_CERT_P12` em base64 e `SIGNING_CERT_PASSWORD`).
+O macOS prende a permissão de Acessibilidade a esse certificado, então ela sobrevive a builds e atualizações.
+
+- Sem o certificado no Keychain, o `build.sh` assina ad hoc e a permissão se perde a cada build: remova o Remendo da lista (−) e permita de novo. No CI ele falha em vez disso.
+- Trocar o certificado tira a permissão de todos os usuários uma vez. O Sparkle aceita a troca porque a chave EdDSA continua a mesma; trocar os dois juntos quebra as atualizações.
 
 ## Adicionar um fix novo
 
