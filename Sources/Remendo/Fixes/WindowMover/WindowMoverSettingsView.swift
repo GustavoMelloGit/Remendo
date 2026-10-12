@@ -34,7 +34,7 @@ struct WindowMoverSettingsView: View {
                         }
                     } label: {
                         Caption("O Remendo não pode mover as janelas",
-                                detail: "Se ele já aparece ligado lá, remova (−) e permita de novo. Acontece depois de atualizar.")
+                                detail: "Se ele já aparece ligado lá, remova (−) e permita de novo.")
                     }
                 }
             }

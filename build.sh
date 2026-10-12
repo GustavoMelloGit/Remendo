@@ -25,7 +25,17 @@ if [[ -n "${VERSION:-}" ]]; then
     /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" "$APP/Contents/Info.plist"
 fi
 
-codesign --force --sign - "$APP"
+# A permissão de Acessibilidade fica presa ao certificado que assina o app. Com o "Remendo"
+# (autoassinado, no Keychain) ela sobrevive a builds e atualizações; ad hoc, se perde a cada build.
+if security find-identity -p codesigning | grep -q '"Remendo"'; then
+    codesign --force --sign Remendo "$APP"
+elif [[ -n "${CI:-}" ]]; then
+    echo "Certificado \"Remendo\" não encontrado. Uma release ad hoc tiraria a permissão de todo mundo." >&2
+    exit 1
+else
+    echo "Certificado \"Remendo\" não encontrado: assinando ad hoc."
+    codesign --force --sign - "$APP"
+fi
 
 echo "Pronto: $APP"
 
