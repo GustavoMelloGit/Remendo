@@ -1,0 +1,19 @@
+# Compila e roda os testes em todo PR, antes do merge.
+# A release (release.yml) só roda depois, no push na main.
+name: Check
+
+on:
+  pull_request:
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Testes
+        run: swift test

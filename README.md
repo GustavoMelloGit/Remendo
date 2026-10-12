@@ -63,6 +63,15 @@ e publica a release. A chave privada também fica no Keychain (conta `remendo` d
 2. Faça uma classe que conforma com `Fix` (`Sources/Remendo/Core/Fix.swift`).
    O `settingsView()` devolve as seções (`Section`) da página do fix na janela de ajustes.
 3. Registre ela em `AppDelegate.fixes`. Ela ganha um item no menu e uma página na barra lateral.
+4. Regra de decisão vai num `<Nome>Rule.swift` sem AppKit, com testes em `Tests/RemendoTests/`.
+
+## Testes
+
+```bash
+swift test
+```
+
+Rodam em todo PR (`.github/workflows/check.yml`) e antes de cada release.
 
 ## Estrutura
 
@@ -91,6 +100,7 @@ Sources/Remendo/
         ├── AXWindow.swift                lê e move a janela (Acessibilidade)
         ├── WindowMoverSettingsView.swift página de ajustes
         └── WindowMoverFix.swift          junta tudo
+Tests/RemendoTests/           testes das regras (Swift Testing)
 Support/Info.plist            registra http/https
 build.sh                      monta o Remendo.app
 scripts/package-release.sh    zip assinado + appcast.xml (usado pelo semantic-release)
