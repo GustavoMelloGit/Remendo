@@ -16,6 +16,11 @@ let package = Package(
                 // Sparkle.framework fica em Remendo.app/Contents/Frameworks.
                 .unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"]),
             ]
-        )
+        ),
+        .testTarget(
+            name: "RemendoTests",
+            dependencies: ["Remendo"],
+            path: "Tests/RemendoTests"
+        ),
     ]
 )

@@ -25,6 +25,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Push direto na main não passa pelo check.yml: sem isso, uma release quebrada sairia.
+      - name: Testes
+        run: swift test
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
